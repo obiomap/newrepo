@@ -5,7 +5,7 @@ pipeline {
         string defaultValue: 'Ninesol9', description: '', name: 'mypass', trim: true
 		
 		choice(
-            choices: ['dev' , 'test', 'prod'],
+            choices: ['dev' , 'test', 'stage', 'prod'],
             description: '',
             name: 'env')
     }
