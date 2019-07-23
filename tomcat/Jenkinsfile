@@ -35,7 +35,7 @@ pipeline {
                 }
             steps {
                 sh  """
-                ansible-playbook -b -k ${WORKSPACE}/installtomcat.yml -i ${WORKSPACE}/hosts -b -u ansible --extra-vars "ansible_ssh_pass=${mypass} ansible_sudo_pass=${mypass}"
+                ansible-playbook -b -k ${WORKSPACE}/tomcat/installtomcat.yml -i ${WORKSPACE}/tomcat/hosts -b -u ansible --extra-vars "ansible_ssh_pass=${mypass} ansible_sudo_pass=${mypass}"
                 echo "Finishing now"
                 """
             }
