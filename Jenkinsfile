@@ -21,6 +21,10 @@ pipeline {
             }
         }
         stage('checkout tomcat scm') {
+	    when {
+                branch 'paddypaddy'
+                beforeAgent true
+                }
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], \
 				doGenerateSubmoduleConfigurations: false, extensions: [], \
