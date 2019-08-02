@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    parameters {
+        string defaultValue: 'Ninesol9', description: '', name: 'mypass', trim: true
+		
+		choice(
+            choices: ['dev' , 'test', 'stage', 'prod'],
+            description: '',
+            name: 'env')
+    }
+
+    stages {
+        stage('send email notification') {
+            steps {
+                emailext (
+                    subject: "Job '${env.JOB_NAME} ${env.BUILD_NUMBER}'",
+                    body: """Tomcat installation and configuration in progress, check console output at "${env.BUILD_URL}" and monitor log. """,
+                    to: "obiomap@gmail.com"
+                    )
+            }
+        }
+        stage('checkout tomcat scm') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], \
+				doGenerateSubmoduleConfigurations: false, extensions: [], \
+				submoduleCfg: [], userRemoteConfigs: [[credentialsId: \
+				'77002dc7-3c22-4399-abe6-59b6c53a771e', url: 'https://github.com/obiomap/tomcat.git']]])
+            }
+        }
+        stage('run the downloaded tomcat ansible playbook') {
+            when {
+                environment ignoreCase: true, name: 'env', value: 'dev'
+                beforeAgent true
+                }
+            steps {
+                sh  """
+                ansible-playbook -b -k ${WORKSPACE}/tomcat/installtomcat.yml -i ${WORKSPACE}/tomcat/hosts -b -u ansible --extra-vars "ansible_ssh_pass=${mypass} ansible_sudo_pass=${mypass}"
+                echo "Finishing now"
+                """
+            }
+            
+        }
+    }
+}
